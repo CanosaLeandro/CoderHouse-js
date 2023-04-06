@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Shopping Cart Simulator v2</title>
+  <title>Shopping Cart Simulator</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="styles.css">
@@ -11,7 +11,7 @@
 <body>
   <header>
     <h1>Welcome to our webshop</h1>
-    <span><small>All images retrieved by Lexica</small></span>
+    <span><small>All images provided by <a href="https://lexica.art/" target="_blank">Lexica</a></small></span>
   </header>
 
   <main>
@@ -20,14 +20,18 @@
         <img src="assets/plant.jpeg" alt="Planta decorativa">
         <h3>Planta decorativa</h3>
         <p class="price">$20.00</p>
-        <button class="add-to-cart-btn" onclick="addToCart(20, 'Planta decorativa')">Add to Cart</button>
+        <button class="add-to-cart-btn" onclick="addToCart(20, 'Planta decorativa')">
+          <span>Add to Cart</span>
+        </button>
       </div>
 
       <div class="product">
         <img src="assets/bracelet.jpeg" alt="Brazalete con gps">
         <h3>Brazalete con GPS</h3>
         <p class="price">$300.00</p>
-        <button class="add-to-cart-btn" onclick="addToCart(300, 'Brazalete con GPS')">Add to Cart</button>
+        <button class="add-to-cart-btn" onclick="addToCart(300, 'Brazalete con GPS')">
+          <span>Add to Cart</span>
+        </button>
       </div>
 
       <div class="product">
@@ -35,13 +39,16 @@
           onclick="openModal('assets/casco.jpeg', 'Casco futurista', '$200.00', 'Caso para moto futurista.')">
         <h3>Casco futurista</h3>
         <p class="price">$200.00</p>
-        <button class="add-to-cart-btn" onclick="addToCart(200, 'Casco futurista')">Add to Cart</button>
+        <button class="add-to-cart-btn" onclick="addToCart(200, 'Casco futurista')">
+          <span>Add to Cart</span>
+        </button>
       </div>
     </section>
 
     <section class="cart-controls">
-      <button class="partial-payment-btn" onclick="partialPayment()">Partial Payment</button>
-      <button class="checkout-btn" onclick="checkout()">Checkout</button>
+      <button class="partial-payment btn" onclick="partialPayment()">Partial Payment</button>
+      <button class="checkout btn" onclick="checkout()">Checkout</button>
+      <button class="remove-from-cart btn" onclick="removeItemFromCart()">Remove from Cart</button>
     </section>
   </main>
 
