@@ -86,3 +86,12 @@ function removeItemFromCart() {
     }
   }
 }
+
+$(document).ready(function() {
+  $('.add-to-cart-btn').on('click', function() {
+    var productName = $(this).attr('data-product-name');
+    let message = this.nextElementSibling
+    message.innerText = `${productName} was added to the cart.`;
+    setTimeout(() => { message.innerText = ''}, 2000)
+  });
+});
