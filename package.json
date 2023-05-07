@@ -1,0 +1,23 @@
+{
+  "name": "lcanosacoderhousejs",
+  "version": "1.0.0",
+  "description": "Demo project for Coderhouse JS",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CanosaLeandro/CoderHouse-js.git"
+  },
+  "author": "LCanosa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CanosaLeandro/CoderHouse-js/issues"
+  },
+  "homepage": "https://github.com/CanosaLeandro/CoderHouse-js#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "sweetalert2": "^11.7.5"
+  }
+}

@@ -127,6 +127,7 @@ header span a:hover::before {
 
 .cart-controls {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 20px;
@@ -145,6 +146,10 @@ header span a:hover::before {
 	border-radius: 5px;
 	cursor: pointer;
 	transition: all 0.3s ease;
+}
+
+.btn:hover {
+  color: #15e3e3
 }
 
 .checkout-btn:hover {

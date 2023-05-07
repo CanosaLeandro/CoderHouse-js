@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "name": "Planta decorativa",
+      "price": 21
+    },
+    {
+      "name": "Brazalete con GPS",
+      "price": 340
+    },
+    {
+      "name": "Casco futurista",
+      "price": 270
+    }
+  ],
+  "imageURLs": [
+    "/balloon.png",
+    "/bionic_eye.png",
+    "/bored_plushy.png",
+    "/car.png",
+    "/eyewear.png",
+    "/guitar.png",
+    "/headphones.png"
+  ]
+}

@@ -1,5 +1,4 @@
-let cartItems = [];
-let totalPrice = 0;
+localStorage.setItem('cart', [])
 
 class Item {
   constructor(name, price) {
@@ -8,90 +7,194 @@ class Item {
   }
 }
 
-function addToCart(price, itemName) {
-  let newItem = new Item(itemName, price)
-  cartItems.push(newItem);
-  totalPrice += newItem.price;
-  alert(newItem.name + " added to cart!");
-  updateCart();
+function fireToast(title, msg = '') {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
+
+  Toast.fire({
+    icon: 'success',
+    title: title,
+    text: msg,
+  })
 }
 
-function updateCart() {
-  let msg = "Cart resume\n"
-  for (let i = 0; i < cartItems.length; i++) {
-    const item = cartItems[i];
-    msg += item.name + ": $" + item.price + "\n"
+function fireError(title, msg = '') {
+  Swal.fire(title, msg, 'error')
+}
+
+function alertModal(name, price, imgUrl) {
+  Swal.fire({
+    title: name,
+    text: price,
+    imageUrl: imgUrl,
+    imageWidth: "100% - 5px",
+    imageHeight: 600,
+    imageAlt: name,
+    confirmButtonColor: '#15e3e3'
+  })
+}
+
+async function addProduct() {
+  const { value: newItem } = await Swal.fire({
+    title: 'New product',
+    html:
+      '<input id="swal-input-name" class="swal2-input">' +
+      '<input id="swal-input-price" class="swal2-input" type="number" step="0.01">',
+    focusConfirm: false,
+    showCancelButton: true,
+    preConfirm: () => {
+      return {
+        name: document.getElementById('swal-input-name').value,
+        price: document.getElementById('swal-input-price').value
+      }
+    }
+  })
+
+  if(newItem) {
+    addItem(newItem)
   }
-  if (cartItems.length === 0) {
-    alert("Your cart is empty.");
+}
+
+function cart() {
+  let localCart = localStorage.getItem('cart')
+  if(localCart === '') {
+    return []
   } else {
-    alert(msg += "\nSubtotal is $" + totalPrice)
+    console.log(JSON.parse(localCart.split(',')))
+    return JSON.parse(localCart.split(','))
   }
+}
+
+function addItem(item) {
+  addProductHTML(item.name, item.price, './assets/product-icon.png')
+
+  fetch('products.json')
+    .then((response) => response.json())
+    .then((json) => getRand(json.imageURLs))
+    .then((imgURL) => {
+      setTimeout(editProductImg(item.name, imgURL), 2000)
+    })
+  localStorage.setItem('products', JSON.stringify())
+
+}
+
+function editProductImg(name, imgURL) {
+  $(`.${name}`)
+}
+
+function getRand(arr) {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+function totalAmount() {
+  let total = cart().reduce(
+    (sum, actual) => sum + actual
+  )
+
+  return total
+}
+
+function addToCart(price, itemName) {
+  let newItem = new Item(itemName, price)
+  localStorage.setItem('cart', JSON.stringify(cart().concat(newItem)))
+  fireToast(`${itemName} added to cart!`)
 }
 
 function checkout() {
-  if (cartItems.length === 0) {
-    alert("Your cart is empty");
+  if (cart().length === 0) {
+    fireError('Empty cart', 'Your cart have 0 items')
   } else {
-    alert("Your total is: $" + totalPrice.toFixed(2));
-    cartItems = [];
-    totalPrice = 0;
-    updateCart();
-  }
-}
-
-function partialPayment() {
-  if (cartItems.length === 0) {
-    alert("Your cart is empty");
-  } else {
-    const partialAmount = prompt("Enter partial amount:");
-    if (partialAmount !== null && partialAmount !== "") {
-      const parsedAmount = parseFloat(partialAmount);
-      if (!isNaN(parsedAmount)) {
-        if (parsedAmount > totalPrice) {
-          alert("Partial amount cannot exceed total price.");
-        } else {
-          alert("Partial payment of $" + parsedAmount + " processed.");
-          totalPrice -= parsedAmount;
-          updateCart();
-        }
-      } else {
-        alert("Invalid partial amount.");
-      }
-    }
+    console.log(totalAmount())
+    Swal.fire("Your total is: $" + totalAmount())
+    localStorage.setItem('cart', []);
   }
 }
 
 function removeItemFromCart() {
-  if (cartItems.length === 0) {
-    alert("Your cart is empty.");
+  if (cart().length === 0) {
+    fireError('Empty cart', 'Your cart have 0 items')
   } else {
     let promptMsg = "Enter the index of the product you want to remove:\n";
-    for (let i = 0; i < cartItems.length; i++) {
-      let item = cartItems[i]
+    for (let i = 0; i < cart().length; i++) {
+      let item = cart()[i]
       console.log(item)
       promptMsg += `${i+1}. ${item.name}\n`
     }
-    let productIndex = prompt(promptMsg);
+    let productIndex = fireSelect(promptMsg);
     if (productIndex !== null && productIndex !== "") {
       let parsedIndex = parseInt(productIndex);
-      if (!isNaN(parsedIndex) && parsedIndex >= 0 && parsedIndex <= cartItems.length) {
-        let removedItem = cartItems.splice(parsedIndex-1, 1)[0];
-        totalPrice -= removedItem.price;
-        alert(removedItem.name + " removed from cart.");
-        updateCart();
+      if (!isNaN(parsedIndex) && parsedIndex >= 0 && parsedIndex <= cart().length) {
+        let removedItem = cart().splice(parsedIndex-1, 1)[0];
+        totalAmount -= removedItem.price;
+        fireToast(removedItem.name + " removed from cart.");
       } else {
-        alert("Invalid index.");
+        fireError("Invalid index");
       }
     }
   }
 }
 
-$(document).ready(function() {
-  $('.add-to-cart-btn').on('click', function() {
-    var productName = $(this).attr('data-product-name');
-    let message = this.nextElementSibling
-    message.innerText = `${productName} was added to the cart.`;
-    setTimeout(() => { message.innerText = ''}, 2000)
-  });
-});
+async function fireSelect(title, msg = '') {
+  let options = {}
+  for(let i = 0; i < cart().length; i++ ){
+    options[i] = `${i+1}. ${cart()[i].name}`
+  }
+  const { value: fruit } = await Swal.fire({
+    title: 'Select field validation',
+    input: 'select',
+    inputOptions: options,
+    inputPlaceholder: 'Select a product',
+    showCancelButton: true,
+    inputValidator: (value) => {
+      return new Promise((resolve) => {
+        if (typeof value === 'number') {
+          resolve()
+        } else {
+          resolve('Invalid input.')
+        }
+      })
+    }
+  })
+}
+
+function productHtml(name, price, imgURL) {
+  let priceValue = parseFloat(price).toFixed(2)
+  return  `<div class="product">
+    <img class="${name}-img" src="${imgURL}" alt="${name}" onclick="alertModal('${name}', '$${priceValue}', '${imgURL}')">
+    <h3>${name}</h3>
+    <p class="price" data-price="${priceValue}">$${priceValue}</p>
+    <button class="add-to-cart-btn" onclick="addToCart(${priceValue}, '${name}')" data-product-name="${name}">
+      <span>Add to cart</span>
+    </button>
+    <div class="cart-message"></div>
+  </div>`
+}
+
+function addProductHTML(name, price, imgURL) {
+  $('section.products')[0].innerHTML += productHtml(name, price, imgURL)
+}
+
+function loadDefaultProducts(items) {
+  let defaultImagesUrls = [
+    '/plant.jpeg',
+    '/bracelet.jpeg',
+    '/casco.jpeg'
+  ]
+
+  for (let i = 0; i < items.length; i++) {
+    addProductHTML(items[i].name, items[i].price, './assets'+defaultImagesUrls[i])
+  }
+}
+
+fetch('products.json')
+  .then((response) => response.json())
+  .then((json) => loadDefaultProducts(json.items))
