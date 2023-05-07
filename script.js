@@ -1,5 +1,10 @@
-localStorage.setItem('cart', [])
+if(localStorage.getItem('cart') !== '') {
+  localStorage.setItem('cart', [])
+}
 
+if(localStorage.getItem('products') !== '') {
+  localStorage.setItem('products', [])
+}
 class Item {
   constructor(name, price) {
     this.name = name,
@@ -36,7 +41,7 @@ function alertModal(name, price, imgUrl) {
     title: name,
     text: price,
     imageUrl: imgUrl,
-    imageWidth: "100% - 5px",
+    imageWidth: "100% - 10px",
     imageHeight: 600,
     imageAlt: name,
     confirmButtonColor: '#15e3e3'
@@ -81,14 +86,33 @@ function addItem(item) {
     .then((response) => response.json())
     .then((json) => getRand(json.imageURLs))
     .then((imgURL) => {
-      setTimeout(editProductImg(item.name, imgURL), 2000)
+      editProductImg(item.name, imgURL)
+      addItemToProducts(item)
     })
-  localStorage.setItem('products', JSON.stringify())
+}
 
+function products() {
+  let localProducts = localStorage.getItem('products')
+  if(localCart === '') {
+    return []
+  } else {
+    console.log(JSON.parse(localCart.split(',')))
+    return JSON.parse(localCart.split(','))
+  }
+}
+
+function addItemToProducts(item) {
+  let products = localStorage.getItem('products')
+  if(products === '') {
+    products = [item]
+  } else {
+    products
+  }
 }
 
 function editProductImg(name, imgURL) {
-  $(`.${name}`)
+  console.log($(`.${name.replace(/\s+/g, '-')}-img`)[0])
+  $(`.${name.replace(/\s+/g, '-')}-img`).attr("src", './assets/'+imgURL)
 }
 
 function getRand(arr) {
@@ -97,7 +121,7 @@ function getRand(arr) {
 
 function totalAmount() {
   let total = cart().reduce(
-    (sum, actual) => sum + actual
+    (sum, actual) => {sum + actual.price}
   )
 
   return total
@@ -169,7 +193,7 @@ async function fireSelect(title, msg = '') {
 function productHtml(name, price, imgURL) {
   let priceValue = parseFloat(price).toFixed(2)
   return  `<div class="product">
-    <img class="${name}-img" src="${imgURL}" alt="${name}" onclick="alertModal('${name}', '$${priceValue}', '${imgURL}')">
+    <img class="${name.replace(/\s+/g, '-')}-img" src="${imgURL}" alt="${name}" onclick="alertModal('${name}', '$${priceValue}', '${imgURL}')">
     <h3>${name}</h3>
     <p class="price" data-price="${priceValue}">$${priceValue}</p>
     <button class="add-to-cart-btn" onclick="addToCart(${priceValue}, '${name}')" data-product-name="${name}">
@@ -195,6 +219,13 @@ function loadDefaultProducts(items) {
   }
 }
 
+function loadProducts() {
+
+}
+
 fetch('products.json')
   .then((response) => response.json())
-  .then((json) => loadDefaultProducts(json.items))
+  .then((json) => {
+    loadDefaultProducts(json.items)
+    loadProducts()
+  })
